@@ -9,6 +9,7 @@ public class AllDays {
         Day7.main(new String[0]);
         Day8.main(new String[0]);
         Day9.main(new String[0]);
+        Day10.main(new String[0]);
     }
 
 }
