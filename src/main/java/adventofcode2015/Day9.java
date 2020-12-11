@@ -1,13 +1,8 @@
 package adventofcode2015;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-
-import adventofcode2015.Day9.PairDistance;
 
 public class Day9 {
 
@@ -137,15 +132,13 @@ public class Day9 {
                     new DistanceTo(pairDistance.from, pairDistance.distance));
         }
 
-        var start = edges.keySet().stream()
-                .min((k1, k2) -> Integer.compare(
-                        edges.get(k1).iterator().next().distance,
-                        edges.get(k2).iterator().next().distance))
-                .get();
         MinPathFinder minPathFinder = new MinPathFinder(edges);
-        ArrayList<String> path = minPathFinder.findMinimumPath();
-        System.out.println(path);
-        System.out.println(minPathFinder.bestPathCost);
+        minPathFinder.findPath();
+        System.out.println("Day 9 part 1: " + minPathFinder.bestPathCost);
+        
+        MaxPathFinder maxPathFinder = new MaxPathFinder(edges);
+        maxPathFinder.findPath();
+        System.out.println("Day 9 part 2: " + maxPathFinder.bestPathCost);
     }
 
 }

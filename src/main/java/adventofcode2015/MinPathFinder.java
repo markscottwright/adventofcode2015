@@ -16,19 +16,19 @@ public class MinPathFinder {
         this.edges = edges;
     }
 
-    public ArrayList<String> findMinimumPath() {
+    public ArrayList<String> findPath() {
         for (String start : edges.keySet()) {
             var path = new ArrayList<String>();
             path.add(start);
-            findMinimumPath(path, 0);
+            findPath(path, 0);
         }
         return bestPath;
     }
 
-    private void findMinimumPath(ArrayList<String> path, int cost) {
+    private void findPath(ArrayList<String> path, int cost) {
         if (path.size() == edges.keySet().size() && cost < bestPathCost) {
             bestPathCost = cost;
-            bestPath = (ArrayList<String>) path.clone();
+            bestPath = new ArrayList<>(path);
         }
 
         for (DistanceTo distanceTo : edges.get(path.get(path.size() - 1))) {
@@ -40,7 +40,7 @@ public class MinPathFinder {
                 continue;
 
             path.add(distanceTo.endpoint);
-            findMinimumPath(path, nextCost);
+            findPath(path, nextCost);
             path.remove(path.size() - 1);
         }
     }

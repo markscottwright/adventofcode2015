@@ -8,8 +8,6 @@ import java.nio.file.Paths;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import adventofcode2015.Day6.Instruction;
-
 public class Day6 {
     static public class Instruction {
         @Override

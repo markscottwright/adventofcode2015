@@ -9,26 +9,26 @@ import adventofcode2015.Day9.DistanceTo;
 public class MaxPathFinder {
 
     private HashMap<String, TreeSet<DistanceTo>> edges;
-    int bestPathCost = Integer.MAX_VALUE;
+    int bestPathCost = Integer.MIN_VALUE;
     ArrayList<String> bestPath = null;
 
     public MaxPathFinder(HashMap<String, TreeSet<DistanceTo>> edges) {
         this.edges = edges;
     }
 
-    public ArrayList<String> findMinimumPath() {
+    public ArrayList<String> findPath() {
         for (String start : edges.keySet()) {
             var path = new ArrayList<String>();
             path.add(start);
-            findMinimumPath(path, 0);
+            findPath(path, 0);
         }
         return bestPath;
     }
 
-    private void findMinimumPath(ArrayList<String> path, int cost) {
-        if (path.size() == edges.keySet().size() && cost < bestPathCost) {
+    private void findPath(ArrayList<String> path, int cost) {
+        if (path.size() == edges.keySet().size() && cost > bestPathCost) {
             bestPathCost = cost;
-            bestPath = (ArrayList<String>) path.clone();
+            bestPath = new ArrayList<>(path);
         }
 
         for (DistanceTo distanceTo : edges.get(path.get(path.size() - 1))) {
@@ -36,11 +36,8 @@ public class MaxPathFinder {
                 continue;
 
             int nextCost = cost + distanceTo.distance;
-            if (nextCost > bestPathCost)
-                continue;
-
             path.add(distanceTo.endpoint);
-            findMinimumPath(path, nextCost);
+            findPath(path, nextCost);
             path.remove(path.size() - 1);
         }
     }
