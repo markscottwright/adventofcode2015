@@ -11,17 +11,6 @@ import com.google.common.collect.Collections2;
 public class Day13 {
 
     static public class AttendeeHappinessEffect {
-        private String attendee;
-        private String neighbor;
-        private int happinessDifference;
-
-        public AttendeeHappinessEffect(String attendee, String neighbor,
-                int happinessDifference) {
-            this.attendee = attendee;
-            this.neighbor = neighbor;
-            this.happinessDifference = happinessDifference;
-        }
-
         static AttendeeHappinessEffect parse(String l) {
             Pattern pattern = Pattern.compile(
                     "(\\S+) would (gain|lose) ([0-9]+) happiness units by sitting next to (\\S+).");
@@ -35,6 +24,17 @@ public class Day13 {
                 return new AttendeeHappinessEffect(m.group(1), m.group(4),
                         -Integer.parseInt(m.group(3)));
         }
+        
+        private String attendee;
+        private String neighbor;
+        private int happinessDifference;
+
+        public AttendeeHappinessEffect(String attendee, String neighbor,
+                int happinessDifference) {
+            this.attendee = attendee;
+            this.neighbor = neighbor;
+            this.happinessDifference = happinessDifference;
+        }
     }
 
     public static void main(String[] strings) {
@@ -45,8 +45,8 @@ public class Day13 {
         
         var attendees = rules.stream().map(r -> r.attendee)
                 .collect(Collectors.toSet());
-        var tableLayouts = Collections2.permutations(attendees);
         
+        var tableLayouts = Collections2.permutations(attendees);
         var maxHappiness = tableLayouts.stream()
                 .mapToInt(table -> runRules(table, fasterRules)).max();
         System.out.println("Day 13 part 1: " + maxHappiness.getAsInt());
@@ -58,6 +58,7 @@ public class Day13 {
             fasterRules.get(attendee).put("me", 0);
         }
         attendees.add("me");
+        
         tableLayouts = Collections2.permutations(attendees);
         maxHappiness = tableLayouts.stream()
                 .mapToInt(table -> runRules(table, fasterRules)).max();
