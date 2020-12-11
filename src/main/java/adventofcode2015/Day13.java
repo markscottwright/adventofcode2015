@@ -41,15 +41,17 @@ public class Day13 {
         var rules = Util.inputLinesForDay(13).stream()
                 .map(AttendeeHappinessEffect::parse)
                 .collect(Collectors.toList());
+        var fasterRules = toFastRules(rules);
+        
         var attendees = rules.stream().map(r -> r.attendee)
                 .collect(Collectors.toSet());
-        var fasterRules = toFastRules(rules);
         var tableLayouts = Collections2.permutations(attendees);
+        
         var maxHappiness = tableLayouts.stream()
                 .mapToInt(table -> runRules(table, fasterRules)).max();
-        
         System.out.println("Day 13 part 1: " + maxHappiness.getAsInt());
-        
+
+        // add me as a neutral party
         fasterRules.put("me", new HashMap<>());
         for (var attendee : attendees) {
             fasterRules.get("me").put(attendee, 0);
