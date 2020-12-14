@@ -10,6 +10,25 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 public class Day15 {
+    private static final class IngredientOptimizerFor500Calories
+            extends IngredientOptimizer {
+        private IngredientOptimizerFor500Calories(
+                List<Ingredient> ingredients) {
+            super(ingredients);
+        }
+
+        @Override
+        protected void rememberIfBest(HashMap<Ingredient, Integer> amounts) {
+            int calories = 0;
+            for (var ingredientAndAmount : amounts.entrySet()) {
+                calories += ingredientAndAmount.getKey().calories
+                        * ingredientAndAmount.getValue();
+            }
+            if (calories == 500)
+                super.rememberIfBest(amounts);
+        }
+    }
+
     static public class Ingredient {
         static Pattern parser = Pattern.compile(
                 "([a-zA-Z]+): capacity ([-0-9]+), durability ([-0-9]+), flavor ([-0-9]+), texture ([-0-9]+), calories ([-0-9]+)");
@@ -104,9 +123,9 @@ public class Day15 {
 
         protected void rememberIfBest(HashMap<Ingredient, Integer> amounts) {
             long score = score(amounts);
-            if (score > bestScore) {
+            if (score > getBestScore()) {
                 bestScore = score;
-                bestSolution = (HashMap<Ingredient, Integer>) amounts.clone();
+                bestSolution = new HashMap<Ingredient, Integer>(amounts);
             }
         }
 
@@ -132,32 +151,24 @@ public class Day15 {
                     * max(0, texture);
             return score;
         }
+
+        public long getBestScore() {
+            return bestScore;
+        }
     }
 
     public static void main(String[] strings) {
         List<Ingredient> ingredients = parseAndCollectForDay(15,
                 Ingredient::parse);
-        IngredientOptimizer ingredientOptimizer = new IngredientOptimizer(
-                ingredients);
+        var ingredientOptimizer = new IngredientOptimizer(ingredients);
         ingredientOptimizer.optimizeIngrediants();
-        System.out.println("Day 15 part 1: " + ingredientOptimizer.bestScore);
+        System.out.println("Day 15 part 1: " + ingredientOptimizer.getBestScore());
 
-        IngredientOptimizer ingredientOptimizerFor500Calories = new IngredientOptimizer(
-                ingredients) {
-            @Override
-            protected void rememberIfBest(
-                    HashMap<Ingredient, Integer> amounts) {
-                int calories = 0;
-                for (var ingredientAndAmount : amounts.entrySet()) {
-                    calories += ingredientAndAmount.getKey().calories
-                            * ingredientAndAmount.getValue();
-                }
-                if (calories == 500)
-                    super.rememberIfBest(amounts);
-            }
-        };
+        var ingredientOptimizerFor500Calories = new IngredientOptimizerFor500Calories(
+                ingredients);
         ingredientOptimizerFor500Calories.optimizeIngrediants();
-        System.out.println("Day 15 part 2: " + ingredientOptimizerFor500Calories.bestScore);
+        System.out.println("Day 15 part 2: "
+                + ingredientOptimizerFor500Calories.getBestScore());
 
     }
 }

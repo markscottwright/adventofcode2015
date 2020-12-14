@@ -1,7 +1,5 @@
 package adventofcode2015;
 
-import java.util.function.IntPredicate;
-
 public class Day11 {
     static boolean containsStraight(char[] s) {
         for (int i = 0; i < s.length - 2; i++) {

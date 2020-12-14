@@ -10,8 +10,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import adventofcode2015.Day15.Ingredient;
-
 public class Util {
 
     public static void fail(String message) {
