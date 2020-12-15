@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -14,6 +15,10 @@ public class Util {
 
     public static void fail(String message) {
         throw new RuntimeException(message);
+    }
+
+    public static int sum(Collection<Integer> containers) {
+        return containers.stream().mapToInt(i -> i).sum();
     }
 
     public static List<String> inputLinesForDay(int dayNum) {
@@ -35,8 +40,7 @@ public class Util {
         return groups;
     }
 
-    public static <T> List<T> parseAndCollectForDay(
-            int day,
+    public static <T> List<T> parseAndCollectForDay(int day,
             Function<String, T> parser) {
         return inputLinesForDay(day).stream().map(parser)
                 .collect(Collectors.toList());
