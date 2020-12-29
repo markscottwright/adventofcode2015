@@ -4,6 +4,8 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import adventofcode2015.Day21.Combatant;
+
 public class Day21Test {
 
     @Test
@@ -12,10 +14,10 @@ public class Day21Test {
         var boss = new Day21.Combatant(12, 7, 2);
         
         while (player.isAlive()) {
-            boss = boss.takeDamage(player);
+            boss = boss.takeDamageFrom(player);
             if (!boss.isAlive())
                 break;
-            player = player.takeDamage(boss);
+            player = player.takeDamageFrom(boss);
             System.out.print("Player:" + player.hitPoints);
             System.out.println("  Boss:" + boss.hitPoints);
         }
