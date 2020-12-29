@@ -1,10 +1,6 @@
 package adventofcode2015;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
-
-import adventofcode2015.Day21.Combatant;
 
 public class Day21Test {
 
