@@ -4,12 +4,14 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.TreeSet;
 
 public class Day24 {
 
+    /**
+     * I am basically a Set of integers, with some caching of sums and products.
+     */
     static class PackageArrangement {
 
         @Override
@@ -46,18 +48,21 @@ public class Day24 {
         }
 
         public boolean isBetterThan(PackageArrangement bestGroup1) {
-            return bestGroup1 == null
-                    || packages.size() <= bestGroup1.packages.size()
+            return
+            // no solution yet
+            bestGroup1 == null ||
+
+            // pack as few packages by Santa as possible
+                    packages.size() <= bestGroup1.packages.size()
+
+                            // minimize "quantum entanglement"
                             && quantumEntanglement.compareTo(
                                     bestGroup1.quantumEntanglement) < 0;
         }
 
         public void addAll(Collection<Integer> remaining) {
             for (int i : remaining) {
-                packages.add(i);
-                weight += i;
-                quantumEntanglement = quantumEntanglement
-                        .multiply(BigInteger.valueOf(i));
+                add(i);
             }
         }
     }
@@ -100,18 +105,23 @@ public class Day24 {
                 return false;
             } else {
                 boolean solution = false;
-
                 int next = remaining.remove(0);
+
+                // try when first item is in other groups
                 forOtherGroups.add(0, next);
                 if (arrangePackages(goalWeight, remaining, group1,
                         forOtherGroups, numOtherGroups))
                     solution = true;
-                group1.add(next);
                 forOtherGroups.remove(0);
+                
+                // try when first item is in group 1
+                group1.add(next);
                 if (arrangePackages(goalWeight, remaining, group1,
                         forOtherGroups, numOtherGroups))
                     solution = true;
                 group1.remove(next);
+                
+                // back up
                 remaining.add(0, next);
                 return solution;
             }
@@ -151,6 +161,7 @@ public class Day24 {
         packer.findSolutionForGroups(3);
         System.out.println(
                 "Day 24 part 1: " + packer.bestGroup1.quantumEntanglement);
+        
         packer = new Packer(input);
         packer.findSolutionForGroups(4);
         System.out.println(
