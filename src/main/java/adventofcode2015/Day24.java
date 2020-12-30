@@ -4,9 +4,9 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.TreeSet;
 
 public class Day24 {
 
@@ -19,17 +19,9 @@ public class Day24 {
                     + ", weight=" + weight + "]";
         }
 
-        HashSet<Integer> packages = new HashSet<Integer>();
+        TreeSet<Integer> packages = new TreeSet<Integer>();
         BigInteger quantumEntanglement = BigInteger.ONE;
         int weight = 0;
-
-        BigInteger getQuantumEntanglement() {
-            return quantumEntanglement;
-        }
-
-        int getWeigth() {
-            return weight;
-        }
 
         public PackageArrangement copy() {
             PackageArrangement out = new PackageArrangement();
@@ -54,8 +46,10 @@ public class Day24 {
         }
 
         public boolean isBetterThan(PackageArrangement bestGroup1) {
-            return bestGroup1 == null || quantumEntanglement
-                    .compareTo(bestGroup1.quantumEntanglement) < 0;
+            return bestGroup1 == null
+                    || packages.size() <= bestGroup1.packages.size()
+                            && quantumEntanglement.compareTo(
+                                    bestGroup1.quantumEntanglement) < 0;
         }
 
         public void addAll(Collection<Integer> remaining) {
@@ -70,270 +64,97 @@ public class Day24 {
 
     static class Packer {
         PackageArrangement bestGroup1 = null;
-        PackageArrangement bestGroup2 = null;
-        PackageArrangement bestGroup3 = null;
         private ArrayList<Integer> input;
 
         public Packer(List<Integer> input) {
             this.input = new ArrayList<Integer>(input);
-            Collections.reverse(input);
         }
 
-        boolean arrangePackages(ArrayList<Integer> remaining,
-                PackageArrangement group1, PackageArrangement group2,
-                PackageArrangement group3) {
+        public boolean findSolutionForGroups(int numGroups) {
+            return arrangePackages(Util.sum(input) / numGroups, input,
+                    new PackageArrangement(), new ArrayList<>(), numGroups - 1);
+        }
 
-            if (!group1.isBetterThan(bestGroup1))
+        boolean arrangePackages(int goalWeight, ArrayList<Integer> remaining,
+                PackageArrangement group1, ArrayList<Integer> forOtherGroups,
+                int numOtherGroups) {
+            if (!group1.isBetterThan(bestGroup1)) {
                 return false;
-
-            else if (remaining.isEmpty()) {
-                // not balanced
-                if ((group1.getWeigth() != group2.getWeigth())
-                        || (group1.getWeigth() != group3.getWeigth()))
-                    return false;
-
-                // balanced and better than previous solution
-                else {
+            } else if (group1.weight > goalWeight) {
+                return false;
+            } else if (group1.weight == goalWeight) {
+                ArrayList<PackageArrangement> otherGroups = new ArrayList<>();
+                for (int i = 0; i < numOtherGroups; ++i)
+                    otherGroups.add(new PackageArrangement());
+                ArrayList<Integer> leftToArrange = new ArrayList<Integer>(
+                        remaining);
+                leftToArrange.addAll(forOtherGroups);
+                if (anyEqualDistributionExists(goalWeight, leftToArrange,
+                        otherGroups)) {
                     bestGroup1 = group1.copy();
-                    bestGroup2 = group2.copy();
-                    bestGroup3 = group3.copy();
+                    // System.out.println(bestGroup1);
                     return true;
                 }
-            }
-
-            else {
-                int remainingWeight = remaining.stream().mapToInt(i -> i).sum();
-                if (group1.getWeigth() > remainingWeight + group2.getWeigth())
-                    return false;
-                if (group1.getWeigth() > remainingWeight + group3.getWeigth())
-                    return false;
-                if (group2.getWeigth() > remainingWeight + group3.getWeigth())
-                    return false;
-                if (group2.getWeigth() > remainingWeight + group1.getWeigth())
-                    return false;
-                if (group3.getWeigth() > remainingWeight + group1.getWeigth())
-                    return false;
-                if (group3.getWeigth() > remainingWeight + group2.getWeigth())
-                    return false;
-
-                Integer nextPackage = remaining.remove(remaining.size() - 1);
-
-                boolean solutionFound = false;
-                group1.add(nextPackage);
-                if (arrangePackages(remaining, group1, group2, group3))
-                    solutionFound = true;
-                group1.remove(nextPackage);
-                group2.add(nextPackage);
-                if (arrangePackages(remaining, group1, group2, group3))
-                    solutionFound = true;
-                group2.remove(nextPackage);
-                group3.add(nextPackage);
-                if (arrangePackages(remaining, group1, group2, group3))
-                    solutionFound = true;
-                group3.remove(nextPackage);
-                remaining.add(nextPackage);
-                return solutionFound;
-            }
-        }
-
-        public void findSolution() {
-            arrangePackages(input, new PackageArrangement(),
-                    new PackageArrangement(), new PackageArrangement());
-        }
-    }
-
-    static class FourGroupPacker {
-        PackageArrangement bestGroup1 = null;
-        PackageArrangement bestGroup2 = null;
-        PackageArrangement bestGroup3 = null;
-        PackageArrangement bestGroup4 = null;
-        private ArrayList<Integer> input;
-
-        public FourGroupPacker(List<Integer> input) {
-            this.input = new ArrayList<Integer>(input);
-            Collections.reverse(input);
-        }
-
-        boolean arrangePackages(ArrayList<Integer> remaining,
-                PackageArrangement group1, PackageArrangement group2,
-                PackageArrangement group3, PackageArrangement group4) {
-
-            if (!group1.isBetterThan(bestGroup1))
                 return false;
-
-            else if (remaining.isEmpty()) {
-                // not balanced
-                if ((group1.getWeigth() != group2.getWeigth())
-                        || (group1.getWeigth() != group3.getWeigth())
-                        || (group1.getWeigth() != group4.getWeigth()))
-                    return false;
-
-                // balanced and better than previous solution
-                else {
-                    bestGroup1 = group1.copy();
-                    bestGroup2 = group2.copy();
-                    bestGroup3 = group3.copy();
-                    bestGroup4 = group4.copy();
-                    return true;
-                }
-            }
-
-            else {
-                int remainingWeight = remaining.stream().mapToInt(i -> i).sum();
-                if (group1.getWeigth() > remainingWeight + group2.getWeigth())
-                    return false;
-                if (group1.getWeigth() > remainingWeight + group3.getWeigth())
-                    return false;
-                if (group1.getWeigth() > remainingWeight + group4.getWeigth())
-                    return false;
-                if (group2.getWeigth() > remainingWeight + group3.getWeigth())
-                    return false;
-                if (group2.getWeigth() > remainingWeight + group1.getWeigth())
-                    return false;
-                if (group2.getWeigth() > remainingWeight + group4.getWeigth())
-                    return false;
-                if (group3.getWeigth() > remainingWeight + group1.getWeigth())
-                    return false;
-                if (group3.getWeigth() > remainingWeight + group2.getWeigth())
-                    return false;
-                if (group3.getWeigth() > remainingWeight + group4.getWeigth())
-                    return false;
-                if (group4.getWeigth() > remainingWeight + group1.getWeigth())
-                    return false;
-                if (group4.getWeigth() > remainingWeight + group2.getWeigth())
-                    return false;
-                if (group4.getWeigth() > remainingWeight + group3.getWeigth())
-                    return false;
-
-                Integer nextPackage = remaining.remove(remaining.size() - 1);
-
-                boolean solutionFound = false;
-                group1.add(nextPackage);
-                if (arrangePackages(remaining, group1, group2, group3, group4))
-                    solutionFound = true;
-                group1.remove(nextPackage);
-                group2.add(nextPackage);
-                if (arrangePackages(remaining, group1, group2, group3, group4))
-                    solutionFound = true;
-                group2.remove(nextPackage);
-                group3.add(nextPackage);
-                if (arrangePackages(remaining, group1, group2, group3, group4))
-                    solutionFound = true;
-                group3.remove(nextPackage);
-                group4.add(nextPackage);
-                if (arrangePackages(remaining, group1, group2, group3, group4))
-                    solutionFound = true;
-                group4.remove(nextPackage);
-
-                remaining.add(nextPackage);
-                return solutionFound;
-            }
-        }
-
-        public void findSolution() {
-            arrangePackages(input, new PackageArrangement(),
-                    new PackageArrangement(), new PackageArrangement(),
-                    new PackageArrangement());
-        }
-    }
-
-    static class RecursivePacker {
-        ArrayList<Integer> input = new ArrayList<Integer>();
-        ArrayList<PackageArrangement> solution = new ArrayList<>();
-
-        public RecursivePacker(Collection<Integer> input) {
-            this.input.addAll(input);
-        }
-
-        boolean arrange(int perGroupWeight, HashSet<Integer> remaining,
-                ArrayList<PackageArrangement> assignedGroups,
-                ArrayList<PackageArrangement> remainingGroups) {
-
-            if (remainingGroups.size() == 1) {
-                if (remainingGroups.get(0).weight != perGroupWeight)
-                    return false;
-
-                remainingGroups.get(0).addAll(remaining);
-                assignedGroups.add(remainingGroups.remove(0));
-
-                if (solution.isEmpty() || assignedGroups.get(0)
-                        .isBetterThan(solution.get(0))) {
-                    setSolution(assignedGroups);
-                    remainingGroups.add(
-                            assignedGroups.remove(assignedGroups.size() - 1));
-                    return true;
-                } else {
-                    remainingGroups.add(
-                            assignedGroups.remove(assignedGroups.size() - 1));
-                    return false;
-                }
-            }
-
-            if (remainingGroups.get(0).weight > perGroupWeight)
+            } else if (remaining.isEmpty()) {
                 return false;
-            else if (remainingGroups.get(0).weight == perGroupWeight) {
-                assignedGroups.add(remainingGroups.remove(0));
-                boolean solution = arrange(perGroupWeight, remaining,
-                        assignedGroups, remainingGroups);
-                remainingGroups
-                        .add(assignedGroups.remove(assignedGroups.size() - 1));
-                return solution;
-            }
-
-            else {
+            } else {
                 boolean solution = false;
-                for (Integer i : new ArrayList<>(remaining)) {
-                    remainingGroups.get(0).add(i);
-                    remaining.remove(i);
-                    if (arrange(perGroupWeight, remaining, assignedGroups,
-                            remainingGroups))
-                        solution = true;
-                    remaining.add(i);
-                    remainingGroups.get(0).remove(i);
-                }
+
+                int next = remaining.remove(0);
+                forOtherGroups.add(0, next);
+                if (arrangePackages(goalWeight, remaining, group1,
+                        forOtherGroups, numOtherGroups))
+                    solution = true;
+                group1.add(next);
+                forOtherGroups.remove(0);
+                if (arrangePackages(goalWeight, remaining, group1,
+                        forOtherGroups, numOtherGroups))
+                    solution = true;
+                group1.remove(next);
+                remaining.add(0, next);
                 return solution;
             }
-
         }
 
-        private void setSolution(ArrayList<PackageArrangement> assignedGroups) {
-            solution = new ArrayList<PackageArrangement>();
-            for (PackageArrangement a : assignedGroups)
-                solution.add(a.copy());
+        public boolean anyEqualDistributionExists(int goalWeight,
+                ArrayList<Integer> remaining, List<PackageArrangement> groups) {
+            if (remaining.isEmpty()) {
+                for (PackageArrangement g : groups)
+                    if (g.weight != goalWeight)
+                        return false;
+                return true;
+            }
+
+            else {
+                var next = remaining.remove(0);
+                for (PackageArrangement g : groups) {
+                    g.add(next);
+                    if (g.weight <= goalWeight && anyEqualDistributionExists(
+                            goalWeight, remaining, groups))
+                        return true;
+                    g.remove(next);
+                }
+                remaining.add(0, next);
+                return false;
+            }
         }
 
-        public void findSolution() {
-            ArrayList<PackageArrangement> assignedGroups = new ArrayList<PackageArrangement>();
-            ArrayList<PackageArrangement> remainingGroups = new ArrayList<PackageArrangement>();
-            remainingGroups.add(new PackageArrangement());
-            remainingGroups.add(new PackageArrangement());
-            remainingGroups.add(new PackageArrangement());
-            var perGroupWeight = input.stream().mapToInt(i -> i).sum() / 3;
-            arrange(perGroupWeight, new HashSet<>(input), assignedGroups,
-                    remainingGroups);
-        }
     }
-    
+
     public static void main(String[] strings) {
         var input = Arrays.asList(1, 3, 5, 11, 13, 17, 19, 23, 29, 31, 41, 43,
                 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109,
                 113);
 
-        // RecursivePacker packer = new RecursivePacker(input);
-        // packer.findSolution();
-        // packer.solution.forEach(System.out::println);
         Packer packer = new Packer(input);
-        packer.findSolution();
-        System.out.println(packer.bestGroup1);
-        System.out.println(packer.bestGroup2);
-        System.out.println(packer.bestGroup3);
-
-        FourGroupPacker packer2 = new FourGroupPacker(input);
-        packer2.findSolution();
-        System.out.println(packer2.bestGroup1);
-        System.out.println(packer2.bestGroup2);
-        System.out.println(packer2.bestGroup3);
-        System.out.println(packer2.bestGroup4);
+        packer.findSolutionForGroups(3);
+        System.out.println(
+                "Day 24 part 1: " + packer.bestGroup1.quantumEntanglement);
+        packer = new Packer(input);
+        packer.findSolutionForGroups(4);
+        System.out.println(
+                "Day 24 part 2: " + packer.bestGroup1.quantumEntanglement);
     }
 
 }
