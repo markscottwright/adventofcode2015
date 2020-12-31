@@ -54,7 +54,7 @@ public class Day20 {
                 break;
         }
         System.out.println("Day 20 part 2: " + houseNumber);
-        System.out.println(stopwatch.elapsed(TimeUnit.MILLISECONDS)/1000.0);
+        //System.out.println(stopwatch.elapsed(TimeUnit.MILLISECONDS)/1000.0);
     }
 
 }

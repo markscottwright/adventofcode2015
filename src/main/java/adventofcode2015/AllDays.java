@@ -1,10 +1,16 @@
 package adventofcode2015;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 
 public class AllDays {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, NoSuchAlgorithmException {
+        Day1.main(new String[0]);
+        Day2.main(new String[0]);
+        Day3.main(new String[0]);
+        Day4.main(new String[0]);
+        Day5.main(new String[0]);
         Day6.main(new String[0]);
         Day7.main(new String[0]);
         Day8.main(new String[0]);
