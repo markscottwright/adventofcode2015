@@ -1,9 +1,5 @@
 package adventofcode2015;
 
-import java.util.concurrent.TimeUnit;
-
-import com.google.common.base.Stopwatch;
-
 public class Day20 {
 
     static int sumEvenDivsors(int n) {
@@ -40,7 +36,7 @@ public class Day20 {
     }
 
     public static void main(String[] strings) {
-        Stopwatch stopwatch = Stopwatch.createStarted();
+        // Stopwatch stopwatch = Stopwatch.createStarted();
         int houseNumber = 0;
         int n = 33100000;
         for (houseNumber = 1; houseNumber < n; ++houseNumber) {
@@ -48,13 +44,13 @@ public class Day20 {
                 break;
         }
         System.out.println("Day 20 part 1: " + houseNumber);
-        
+
         for (houseNumber = 1; houseNumber < n; ++houseNumber) {
             if (numPresentsAtHouse2(houseNumber) >= n)
                 break;
         }
         System.out.println("Day 20 part 2: " + houseNumber);
-        //System.out.println(stopwatch.elapsed(TimeUnit.MILLISECONDS)/1000.0);
+        // System.out.println(stopwatch.elapsed(TimeUnit.MILLISECONDS)/1000.0);
     }
 
 }
